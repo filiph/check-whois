@@ -57,7 +57,8 @@ def main(argv):
     min_domain_length = 1
     max_domain_length = 18
     supported_tlds = ("cz", "sk", "com", "net", "org")
-    whois_not_found_string = {  # different TLDs' WHOIS servers return different messages on NOT FOUND
+    # different TLDs' WHOIS servers return different messages on NOT FOUND
+    whois_not_found_string = {
         "cz"  : "ERROR:101: no entries found",
         "sk"  : "Not found.",
         "com" : "No match for \"",
@@ -75,7 +76,8 @@ def main(argv):
     
     # got command lines options?
     try:                                
-        opts, args = getopt.getopt(argv, "hd:s:", ["help", "tld=", "suffix=", "min=", "max=", "debug"])
+        opts, args = getopt.getopt(argv, "hd:s:", ["help", "tld=", "suffix=",
+                                                   "min=", "max=", "debug"])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -117,13 +119,14 @@ def main(argv):
     try:
         infile = codecs.open(input_file_path, encoding='utf-8')
     except IOError:
-        print("Could not open file '"+ input_file_path +"'. Exiting.")
+        print("Could not open file '" + input_file_path + "'. Exiting.")
         sys.exit(1)
         
     try:
         outfile = open(output_file_path, 'w')
     except IOError:
-        print("Could not open file '"+ output_file_path +"' for writing. Exiting.")
+        print("Could not open file '" + output_file_path +
+              "' for writing. Exiting.")
         sys.exit(1)
         
     if debug:
@@ -141,7 +144,8 @@ def main(argv):
                         )).encode('ascii', 'ignore').strip()
         
         # filtering out too short and too long domains
-        if len(domain_name) <= max_domain_length and len(domain_name) >= min_domain_length:
+        if len(domain_name) <= max_domain_length and \
+                        len(domain_name) >= min_domain_length:
             domain_tld = domain_name + "." + tld
             
             output = ""
@@ -149,34 +153,41 @@ def main(argv):
             
             while True:
                 time.sleep(1)  # Netiquette.
-                # this line calls the system shell line `whois svatymikulas.cz` and gets stdout
-                output = subprocess.Popen(["whois", domain_tld], stdout=subprocess.PIPE).communicate()[0]
+                # this line calls the system shell line `whois svatymikulas.cz
+                # and gets stdout
+                output = subprocess.Popen(["whois", domain_tld],
+                                          stdout=subprocess.PIPE)\
+                    .communicate()[0]
                 
                 if debug:
                     debugfile.write(output)
                     debugfile.flush()
                 
                 # find out if whois threw the 'connection limit' error
-                limitIndex = output.find(whois_connection_limit_string[tld])
-                if limitIndex is -1:
+                limit_index = output.find(whois_connection_limit_string[tld])
+                if limit_index is -1:
                     # it appears we have the whole thing
                     break
                 else:
-                    # we got the 'connection limit exceeded' error. Waiting some time.
+                    # we got the 'connection limit exceeded' error. Waiting some
+                    # time.
                     print("... waiting " + str(waitSeconds) + " seconds ...")
                     time.sleep(waitSeconds)
                     # exponentially increasing the wait period
-                    waitSeconds = waitSeconds * 2
-            
-            
-            errorIndex = output.find(whois_not_found_string[tld])
-            if errorIndex is not -1:
+                    waitSeconds *= 2
+
+            error_index = output.find(whois_not_found_string[tld])
+            if error_index is not -1:
                 # we have a nonexistent domain on our hands
                 print(domain_tld + " is free!")
                 outfile.write(domain_tld + "\n")
-                outfile.flush() # this is here in case you want to do `tail -f xyz.txt` in the terminal
+                # this is here in case you want to do `tail -f xyz.txt` in the
+                # terminal
+                outfile.flush()
+
             else:
-                # it seems the domain is already registered: let's just print it out
+                # it seems the domain is already registered: let's just print
+                # it out
                 print(domain_tld)
                 
     infile.close()
