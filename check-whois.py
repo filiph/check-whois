@@ -123,7 +123,7 @@ def main(argv):
         sys.exit(1)
         
     try:
-        outfile = open(output_file_path, 'w')
+        outfile = open(output_file_path, 'a')
     except IOError:
         print("Could not open file '" + output_file_path +
               "' for writing. Exiting.")
