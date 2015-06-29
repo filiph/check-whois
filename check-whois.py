@@ -148,6 +148,7 @@ def main(argv):
             waitSeconds = 1
             
             while True:
+                time.sleep(1)  # Netiquette.
                 # this line calls the system shell line `whois svatymikulas.cz` and gets stdout
                 output = subprocess.Popen(["whois", domain_tld], stdout=subprocess.PIPE).communicate()[0]
                 
