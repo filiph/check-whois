@@ -35,6 +35,7 @@ Options:
                             Default is 1.
 --max=NUMBER                Maximum number of characters in a domain.
                             Default is 18.
+--skip=NUMBER               Skip NUMBER first lines in input file.
 
 """
 
@@ -73,11 +74,13 @@ def main(argv):
         "org" : "WHOIS LIMIT EXCEEDED"
     }
     debug = False
+    skip_first = 0
     
     # got command lines options?
     try:                                
         opts, args = getopt.getopt(argv, "hd:s:", ["help", "tld=", "suffix=",
-                                                   "min=", "max=", "debug"])
+                                                   "min=", "max=", "debug",
+                                                   "skip="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -103,6 +106,8 @@ def main(argv):
         elif opt == "--debug":
             print("Debug ON.")
             debug = True
+        elif opt == "--skip":
+            skip_first = int(arg)
     
     if len(args) > 0:
         input_file_path = args[0]
@@ -118,6 +123,9 @@ def main(argv):
     
     try:
         infile = codecs.open(input_file_path, encoding='utf-8')
+        for i in xrange(skip_first):
+            infile.readline()
+
     except IOError:
         print("Could not open file '" + input_file_path + "'. Exiting.")
         sys.exit(1)
