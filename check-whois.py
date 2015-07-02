@@ -157,7 +157,7 @@ def main(argv):
         domain_name = filipUtils.removeSpaces(
                         filipUtils.removeDots(
                             filipUtils.removeDiacritics(line)
-                        )).encode('ascii', 'ignore').strip()
+                        )).encode('ascii', 'ignore').strip().lower()
         
         # filtering out too short and too long domains
         if min_domain_length <= len(domain_name) <= max_domain_length:
