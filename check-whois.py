@@ -174,18 +174,24 @@ def main(argv):
                 time.sleep(wait_seconds)  # Netiquette.
                 # this line calls the system shell line `whois svatymikulas.cz
                 # and gets stdout
-                output, err = subprocess.Popen(
+                whois_process = subprocess.Popen(
                     ["whois", domain_tld], stdout=subprocess.PIPE
-                ).communicate()
+                )
+
+                output, err = whois_process.communicate()
 
                 if err:
                     logger.error(err)
+
+                if whois_process.returncode != 0:
+                    logger.error("Process whois returned with code %d",
+                                 whois_process.returncode)
 
                 logger.debug(output)
 
                 # find out if whois threw the 'connection limit' error
                 limit_index = output.find(whois_connection_limit_string[tld])
-                if err or limit_index != -1:
+                if err or whois_process.returncode != 0 or limit_index != -1:
                     # Exponentially increasing the wait period.
                     wait_seconds *= 2
                     # We got the 'connection limit exceeded' or another error.
