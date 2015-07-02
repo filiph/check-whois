@@ -185,7 +185,11 @@ def main(argv):
                 if err:
                     logger.error(err)
 
-                if whois_process.returncode != 0:
+                if whois_process.returncode >= 2:
+                    # Return code 0: domain exists.
+                    # Return code 1: domain doesn't exist. (But this is
+                    #                undocumented and buggy on certain domains.)
+                    # Return code 2+: error.
                     logger.error("Process whois returned with code %d",
                                  whois_process.returncode)
 
@@ -193,7 +197,7 @@ def main(argv):
 
                 # find out if whois threw the 'connection limit' error
                 limit_index = output.find(whois_connection_limit_string[tld])
-                if err or whois_process.returncode != 0 or limit_index != -1:
+                if err or whois_process.returncode >= 2 or limit_index != -1:
                     # Exponentially increasing the wait period.
                     wait_seconds *= 2
                     if wait_seconds >= GIVE_UP_THRESHOLD:
