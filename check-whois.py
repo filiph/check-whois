@@ -49,6 +49,8 @@ import subprocess
 
 import filipUtils
 
+GIVE_UP_THRESHOLD = 10
+"The number of seconds that is too much for the script to wait for one domain."
 
 def main(argv):
     
@@ -194,6 +196,10 @@ def main(argv):
                 if err or whois_process.returncode != 0 or limit_index != -1:
                     # Exponentially increasing the wait period.
                     wait_seconds *= 2
+                    if wait_seconds > GIVE_UP_THRESHOLD:
+                        logger.error("Unrecoverable error on %s, gave up.",
+                                     domain_tld)
+                        break
                     # We got the 'connection limit exceeded' or another error.
                     # Waiting some time.
                     logger.debug("... waiting %s seconds", str(wait_seconds))
