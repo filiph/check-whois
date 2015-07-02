@@ -49,8 +49,11 @@ import subprocess
 
 import filipUtils
 
+# The number of seconds that is too much for the script to wait for one domain.
 GIVE_UP_THRESHOLD = 4
-"The number of seconds that is too much for the script to wait for one domain."
+
+# Whois output below this is considered invalid / broken.
+MIN_VALID_WHOIS_OUTPUT = 50
 
 def main(argv):
     
@@ -197,7 +200,9 @@ def main(argv):
 
                 # find out if whois threw the 'connection limit' error
                 limit_index = output.find(whois_connection_limit_string[tld])
-                if err or whois_process.returncode >= 2 or limit_index != -1:
+                if (((err or whois_process.returncode >= 2)
+                        and len(output) < MIN_VALID_WHOIS_OUTPUT)
+                        or limit_index != -1):
                     # Exponentially increasing the wait period.
                     wait_seconds *= 2
                     if wait_seconds >= GIVE_UP_THRESHOLD:
