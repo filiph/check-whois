@@ -36,6 +36,7 @@ Options:
 --max=NUMBER                Maximum number of characters in a domain.
                             Default is 18.
 --skip=NUMBER               Skip NUMBER first lines in input file.
+--debug                     Turn debug logging on.
 
 """
 
@@ -127,11 +128,13 @@ def main(argv):
         "%(asctime)s [%(levelname)-5.5s]  %(message)s"
     )
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG if debug else logging.INFO)
+    logger.setLevel(logging.DEBUG)
     log_file_handler = logging.FileHandler("check-whois.log")
+    log_file_handler.setLevel(logging.DEBUG if debug else logging.INFO)
     log_file_handler.setFormatter(log_formatter)
     logger.addHandler(log_file_handler)
     log_console_handler = logging.StreamHandler(sys.stdout)
+    log_console_handler.setLevel(logging.INFO)
     logger.addHandler(log_console_handler)
 
     logger.info("Opening files and starting.")
