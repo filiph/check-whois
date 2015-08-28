@@ -50,7 +50,7 @@ import subprocess
 import filipUtils
 
 # The number of seconds that is too much for the script to wait for one domain.
-GIVE_UP_THRESHOLD = 4
+GIVE_UP_THRESHOLD = 20
 
 # Whois output below this is considered invalid / broken.
 MIN_VALID_WHOIS_OUTPUT = 50
